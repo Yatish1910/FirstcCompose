@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FirstcCompose</string>
+    <string name="check">"Check</string>
+    <string name="notCheck">"Not Check</string>
+</resources>
