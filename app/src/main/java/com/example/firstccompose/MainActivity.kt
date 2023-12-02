@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             FirstcComposeTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    MyApp(modifier = Modifier.fillMaxSize())
+                    MyApp(modifier = Modifier)
                 }
             }
         }
@@ -86,7 +86,7 @@ fun MyApp(modifier: Modifier = Modifier) {
         if (!shouldShowOnBoarding) {
             OnBoarding(modifier, onContinueClicked = { shouldShowOnBoarding = true })
         } else {
-            SearchBar(modifier = modifier.fillMaxWidth())
+            FavoriteCard()
         }
     }
 }
@@ -243,25 +243,29 @@ private fun FavoriteCard(
 ) {
     Surface(
         shape = MaterialTheme.shapes.medium,
-        modifier = modifier
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.primary
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.width(255.dp)
         ) {
             Image(
-                painter = painterResource(id = androidx.core.R.drawable.ic_call_answer),
+                painter = painterResource(id = R.drawable.layouts23_1440),
                 contentDescription = null,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(80.dp)
             )
-            Text(text = "Week of the Year")
+            Text(text = "Week of the Year",
+                modifier = Modifier.padding(horizontal = 16.dp) ,style = MaterialTheme.typography.titleMedium,)
 
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
-fun showCard(){
+fun ShowCard() {
     FirstcComposeTheme {
         FavoriteCard()
     }
