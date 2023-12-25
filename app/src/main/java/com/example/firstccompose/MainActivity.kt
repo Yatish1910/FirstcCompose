@@ -2,9 +2,12 @@
 
 package com.example.firstccompose
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -13,6 +16,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,12 +28,20 @@ import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,6 +49,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -81,12 +96,13 @@ fun MyApp(modifier: Modifier = Modifier) {
         mutableStateOf(false)
     }
     Surface(
-        modifier = modifier
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.outline
     ) {
         if (!shouldShowOnBoarding) {
             OnBoarding(modifier, onContinueClicked = { shouldShowOnBoarding = true })
         } else {
-            FavoriteCard()
+            SoothApp()
         }
     }
 }
@@ -172,7 +188,7 @@ fun CardContent(name: String) {
 @Composable
 private fun SearchBar(modifier: Modifier) {
     TextField(
-        value = "",
+        value = "Settings",
         onValueChange = {},
         leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
         placeholder = {
@@ -180,21 +196,22 @@ private fun SearchBar(modifier: Modifier) {
         },
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(56.dp),
-
-        )
+            .heightIn(56.dp)
+    )
 }
 
 @Composable
 private fun AlignYourBody(
-    modifier: Modifier
+
+    @DrawableRes drawable: Int,
+    @StringRes text: Int
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = Modifier
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+            painter = painterResource(id = drawable),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -202,20 +219,20 @@ private fun AlignYourBody(
                 .size(88.dp)
         )
         Text(
-            text = "Inversion",
+            text = stringResource(id = text),
             modifier = Modifier.paddingFromBaseline(top = 24.dp, bottom = 8.dp)
         )
 
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFF5F0E)
-@Composable
-fun AlignBodyPreview() {
-    FirstcComposeTheme {
-        AlignYourBody(modifier = Modifier.padding(8.dp))
-    }
-}
+//@Preview(showBackground = true, backgroundColor = 0xFFF5F0E)
+//@Composable
+//fun AlignBodyPreview() {
+//    FirstcComposeTheme {
+//        AlignYourBody(modifier = Modifier.padding(8.dp))
+//    }
+//}
 
 @Composable
 private fun OnBoarding(
@@ -239,7 +256,9 @@ private fun OnBoarding(
 
 @Composable
 private fun FavoriteCard(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    @DrawableRes drawable: Int,
+    @StringRes text: Int
 ) {
     Surface(
         shape = MaterialTheme.shapes.medium,
@@ -251,25 +270,166 @@ private fun FavoriteCard(
             modifier = Modifier.width(255.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.layouts23_1440),
+                painter = painterResource(id = drawable),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(80.dp)
             )
-            Text(text = "Week of the Year",
-                modifier = Modifier.padding(horizontal = 16.dp) ,style = MaterialTheme.typography.titleMedium,)
+            Text(
+                text = stringResource(id = text),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                style = MaterialTheme.typography.titleMedium,
+            )
 
         }
     }
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
+//@Composable
+//fun ShowCard() {
+//    FirstcComposeTheme {
+//        FavoriteCard()
+//    }
+//}
+
 @Composable
-fun ShowCard() {
-    FirstcComposeTheme {
-        FavoriteCard()
+private fun AlignYourBodyRow() {
+    val alignYourBodyData: ArrayList<AlignYourBodyData> = arrayListOf()
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    LazyRow(
+        modifier = Modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp)
+    ) {
+        items(alignYourBodyData) {
+            AlignYourBody(drawable = it.drawableRes, text = it.text)
+        }
     }
 }
+
+@Composable
+private fun FavoriteCardGrid(
+    modifier: Modifier = Modifier,
+) {
+    val alignYourBodyData: ArrayList<AlignYourBodyData> = arrayListOf()
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    alignYourBodyData.add(AlignYourBodyData(R.drawable.layouts23_1440, R.string.check))
+    LazyHorizontalGrid(
+        rows = GridCells.Fixed(2),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier.height(168.dp)
+    ) {
+        items(alignYourBodyData) {
+            FavoriteCard(Modifier.height(80.dp), it.drawableRes, it.text)
+        }
+    }
+}
+
+@Composable
+private fun HomeSection(
+    @StringRes title: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(modifier) {
+        Text(
+            stringResource(id = title),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier
+                .paddingFromBaseline(top = 40.dp, bottom = 16.dp)
+                .padding(horizontal = 16.dp)
+        )
+        content()
+    }
+}
+
+@Composable
+fun HomeScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier.verticalScroll(rememberScrollState())
+    ) {
+        Spacer(modifier = modifier.height(16.dp))
+        SearchBar(modifier = modifier.padding(horizontal = 16.dp))
+        HomeSection(title = R.string.check) {
+            AlignYourBodyRow()
+        }
+        HomeSection(title = R.string.check) {
+            FavoriteCardGrid()
+        }
+        Spacer(modifier = modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun SootheBottomNavigation(modifier: Modifier = Modifier) {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = modifier
+    ) {
+        NavigationBarItem(
+            selected = true,
+            onClick = {},
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Spa,
+                    contentDescription = null
+                )
+            },
+            label = { Text(stringResource(id = R.string.check)) })
+        NavigationBarItem(
+            selected = false,
+            onClick = {},
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = null
+                )
+            },
+            label = { Text(stringResource(id = R.string.check)) })
+    }
+}
+
+@Composable
+@Preview
+private fun HomeSectionPreview() {
+    FirstcComposeTheme {
+        SootheBottomNavigation()
+    }
+}
+@Composable
+fun SoothApp(){
+    FirstcComposeTheme {
+        Scaffold(
+            bottomBar = { SootheBottomNavigation()}
+        ) {padding->
+            HomeScreen(Modifier.padding(padding))
+        }
+    }
+}
+
+
+data class AlignYourBodyData(
+    val drawableRes: Int,
+    val text: Int
+)
 
 
 //onContinueClicked: () -> Unit,
