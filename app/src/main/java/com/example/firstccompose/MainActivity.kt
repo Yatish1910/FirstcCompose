@@ -2,7 +2,6 @@
 
 package com.example.firstccompose
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -38,6 +37,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Search
@@ -45,6 +45,7 @@ import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,10 +56,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -99,10 +102,88 @@ fun MyApp(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.outline
     ) {
-        if (!shouldShowOnBoarding) {
-            OnBoarding(modifier, onContinueClicked = { shouldShowOnBoarding = true })
-        } else {
-            SoothApp()
+//        if (!shouldShowOnBoarding) {
+//            OnBoarding(modifier, onContinueClicked = { shouldShowOnBoarding = true })
+//        } else {
+//            SoothApp()
+//        }
+        StatesLesson(modifier)
+    }
+}
+
+@Composable
+fun StatesLesson(modifier: Modifier) {
+    WellnessScreen(modifier)
+}
+
+@Composable
+fun WellnessScreen(modifier: Modifier) {
+    ///WaterCounter(modifier)
+    WellnessTaskList()
+    //StatefulCounter(modifier)
+}
+
+@Composable
+fun StatefulCounter(modifier: Modifier) {
+    var count by rememberSaveable {
+        mutableStateOf(0)
+    }
+    StateLessCounter(count, { count++ }, modifier)
+}
+
+@Composable
+fun StateLessCounter(count: Int, function: () -> Unit, modifier: Modifier) {
+    Column(modifier = modifier.padding(16.dp)) {
+        if (count > 0) {
+            Text("You've had $count glasses.")
+        }
+        Button(onClick = function, Modifier.padding(top = 8.dp), enabled = count < 10) {
+            Text("Add one")
+        }
+    }
+}
+
+@Composable
+fun WaterCounter(modifier: Modifier) {
+    Column(modifier = modifier.padding(16.dp)) {
+        var count by remember {
+            mutableIntStateOf(0)
+        }
+        if (count > 0) {
+            Text("You've had $count glasses.")
+            var show by remember {
+                mutableStateOf(true)
+            }
+            if (show) {
+                WellnessTaskItem(
+                    taskName = "Have you taken your 15 minute walk today?",
+                    onClose = { show = false })
+            }
+        }
+        Button(onClick = { count++ }, Modifier.padding(top = 8.dp)) {
+            Text("Add one")
+        }
+    }
+
+}
+
+@Composable
+fun WellnessTaskItem(
+    taskName: String,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier, verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp),
+            text = taskName
+        )
+        IconButton(onClick = onClose) {
+            Icon(Icons.Filled.Close, contentDescription = "Close")
         }
     }
 }
@@ -147,7 +228,8 @@ fun CardContent(name: String) {
             .padding(12.dp)
             .animateContentSize(
                 animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
                 )
             )
     ) {
@@ -414,12 +496,13 @@ private fun HomeSectionPreview() {
         SootheBottomNavigation()
     }
 }
+
 @Composable
-fun SoothApp(){
+fun SoothApp() {
     FirstcComposeTheme {
         Scaffold(
-            bottomBar = { SootheBottomNavigation()}
-        ) {padding->
+            bottomBar = { SootheBottomNavigation() }
+        ) { padding ->
             HomeScreen(Modifier.padding(padding))
         }
     }
@@ -511,35 +594,74 @@ fun ItemList(content: String) {
                 )
             }
         }
+    } /// -----------------------------------------------------------------
+
+}
+@Composable
+fun WellnessTaskItem(
+    taskName: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier, verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp),
+            text = taskName
+        )
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
+        IconButton(onClick = onClose) {
+            Icon(Icons.Filled.Close, contentDescription = "Close")
+        }
     }
 }
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Preview(showBackground = true)
-//@Composable
-//private fun Greeting() {
-//
-//    Text(
-//        text = "Yatish", fontStyle = FontStyle.Italic,
-//        fontWeight = FontWeight.ExtraBold,
-//
-//        )
-//    Spacer(modifier = Modifier.height(80.dp))
-//
-//    Image(
-//        painter = painterResource(id = R.drawable.ic_launcher_foreground),
-//
-//        contentDescription = "Dummy Photo",
-//        contentScale = ContentScale.Crop,
-//        colorFilter = ColorFilter.tint(Color.Black),
-//        modifier = Modifier
-//            .size(80.dp)
-//            .padding(20.dp)
-//            .clip(CircleShape)
-//            .border(2.dp, Color.Gray, CircleShape)
-//    )
-//
-//}
+
+@Composable
+fun WellnessTaskItem(
+    taskName: String,
+    modifier: Modifier = Modifier
+) {
+    var checkState by rememberSaveable {
+        mutableStateOf(false)
+    }
+    WellnessTaskItem(
+        taskName = taskName,
+        checked = checkState,
+        onCheckedChange = { newValue -> checkState = newValue },
+        onClose = { },
+        modifier
+    )
+}
+fun getTask() = List(30) { i -> WellnessTask(i, "Task # $i") }
+
+@Composable
+fun WellnessTaskList(
+    modifier: Modifier = Modifier,
+    list: List<WellnessTask> = rememberSaveable {
+        getTask()
+    }
+){
+    LazyColumn(
+        modifier = modifier
+    ) {
+        items(list) { task ->
+            WellnessTaskItem(taskName = task.label)
+        }
+    }
+}
 
 enum class Pages {
     LISTING, DETAIL
 }
+
+data class WellnessTask(
+    val id: Int, val label: String
+)
